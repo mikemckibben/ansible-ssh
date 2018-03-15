@@ -1,41 +1,42 @@
 {-# LANGUAGE DuplicateRecordFields  #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts       #-}
+{-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE OverloadedStrings      #-}
+{-# LANGUAGE RecordWildCards        #-}
+{-# LANGUAGE TemplateHaskell        #-}
+{-# LANGUAGE TypeSynonymInstances   #-}
 module Main.Ansible (execSsh)
 where
 
-import Control.Applicative (empty)
-import Control.Lens
-  ( (^?), (^.), (&), (.~), (%~)
-  , makeFieldsNoPrefix, over, preview, to, _Just, _Right)
-import Control.Monad (forM_, when)
-import Data.Aeson.Lens (key, _String, _Value)
-import Data.Either (rights)
-import Data.List (intercalate)
-import Data.Maybe (fromMaybe, listToMaybe)
-import Data.Semigroup
-import Data.Text (Text, pack, unpack)
-import Filesystem.Path.CurrentOS (fromText)
-import qualified Data.Text as Text
-import System.Posix.Process (executeFile)
-import Text.Parsec as P
-import Text.Parsec.Char as P
-import Text.Parsec.Combinator as P
-import qualified Turtle as T
+import           Control.Applicative       (empty)
+import           Control.Lens              (makeFieldsNoPrefix, over, preview,
+                                            to, (%~), (&), (.~), (^.), (^?),
+                                            _Just, _Right)
+import           Control.Monad             (forM_, when)
+import           Data.Aeson.Lens           (key, _String, _Value)
+import           Data.Either               (rights)
+import           Data.List                 (intercalate)
+import           Data.Maybe                (fromMaybe, listToMaybe)
+import           Data.Semigroup
+import           Data.Text                 (Text, pack, unpack)
+import qualified Data.Text                 as Text
+import           Filesystem.Path.CurrentOS (fromText)
+import           System.Posix.Process      (executeFile)
+import           Text.Parsec               as P
+import           Text.Parsec.Char          as P
+import           Text.Parsec.Combinator    as P
+import qualified Turtle                    as T
 
 type Parser = P.Parsec String ()
 
+-- |ssh command arguments for an ansible inventory host
 data SshConfig = SshConfig
   { _sshExecutable :: String
-  , _sshHost :: String
+  , _sshHost       :: String
   , _sshRemoteUser :: String
-  , _sshArgs :: [String] }
+  , _sshArgs       :: [String] }
   deriving (Eq, Show)
 
 makeFieldsNoPrefix ''SshConfig
@@ -46,8 +47,10 @@ defaultSshConfig = SshConfig
   , _sshRemoteUser = ""
   , _sshArgs = [] }
 
+-- |run the ansible-inventory program with given arguments
 runAnsibleInventory args = T.inproc "ansible-inventory" args empty
 
+-- |run the ansible-config to return the project ansible configuration
 runAnsibleConfig = T.inproc "ansible-config" ["view"] empty
 
 loadDefaultSshConfig :: IO SshConfig
@@ -55,6 +58,8 @@ loadDefaultSshConfig = T.fold runAnsibleConfig (T.Fold step defaultSshConfig id)
   where step c l = maybe c (modifySshConfig c) (parseLine l)
         parseLine = match configKeyValue . unpack . T.lineToText
 
+-- |parse the ansible ssh configuration for the given host, merging in any
+-- global configuration with any per-host configuration overrides.
 loadSshConfig :: String -> IO SshConfig
 loadSshConfig hostname = do
   config <- loadDefaultSshConfig
@@ -110,10 +115,15 @@ modifySshConfig :: SshConfig -> (String, String) -> SshConfig
 modifySshConfig config pair =
   case pair of
     ("remote_user", v) -> config & sshRemoteUser .~ v
-    ("ssh_args", v) -> config & sshArgs .~ matchArgLine v
-    _ -> config
+    ("ssh_args", v)    -> config & sshArgs .~ matchArgLine v
+    _                  -> config
 
-execSsh :: Maybe String -> String -> [String] -> IO ()
+-- | execute an ssh command or open interactive session to an ansible inventory
+-- host.
+execSsh :: Maybe String -- ^ directory to read ansible inventory
+        -> String       -- ^ ansible host
+        -> [String]     -- ^ ssh command arguments
+        -> IO ()
 execSsh ansibleDir ansibleHost extraArgs = do
   -- set current directory to ansible directory or use current working directory
   forM_ ansibleDir $ T.cd . T.fromString

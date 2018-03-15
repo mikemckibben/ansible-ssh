@@ -23,9 +23,11 @@ before_install:
   - export LOCAL_INSTALL_BIN="$(stack path --local-install-root)/bin"
 
 script:
+  - set -e
+  - env
   - travis_wait stack --no-terminal setup
   - stack --no-terminal build
-  - cp $LOCAL_INSTALL_BIN/ansible-ssh $TRAVIS_BUILD_DIR/ansible-ssh-${TRAVIS_OS_NAME}-${ARCH}-${TRAVIS_TAG}
+  - cp $LOCAL_INSTALL_BIN/ansible-ssh $LOCAL_INSTALL_BIN/ansible-ssh-${TRAVIS_OS_NAME}-${ARCH}-${TRAVIS_TAG}
 
 deploy:
   provider: releases
@@ -35,7 +37,7 @@ deploy:
   overwrite: true
   file_glob: true
   files:
-    - ansible-ssh-*
+    - $LOCAL_INSTALL_BIN/ansible-ssh-*
   name: "$TRAVIS_TAG Release"
   on:
     branch: master

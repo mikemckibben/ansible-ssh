@@ -9,6 +9,7 @@ import Control.Applicative ((<**>), many)
 import qualified Options.Applicative as O
 import qualified Options.Applicative.Text as O
 
+-- |ansible-ssh executable command line options
 data Options = Options
   { optAnsibleDirectory :: Maybe String
   , optAnsibleHost :: String
@@ -31,5 +32,6 @@ cmdOptions = O.info (optParser <**> O.helper) (O.progDesc "ssh login to ansible 
                (O.metavar "ARG"
                 <> O.help "ssh arguments"))
 
+-- |parse ansible-ssh command line options
 parseOptions :: IO Options
 parseOptions = O.execParser cmdOptions

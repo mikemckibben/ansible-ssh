@@ -1,23 +1,23 @@
 name:           ansible-ssh
-version:        0.1.1
-description:    Please see the README on Github at <https://github.com/githubuser/ansible-ssh#readme>
-homepage:       https://github.com/githubuser/ansible-ssh#readme
-bug-reports:    https://github.com/githubuser/ansible-ssh/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2018 Author name here
-license:        BSD3
+version:        0.1.2
+description:    Please see the README.md on Github at <https://github.com/mikemckibben/ansible-ssh#readme>
+homepage:       https://github.com/mikemckibben/ansible-ssh#readme
+bug-reports:    https://github.com/mikemckibben/ansible-ssh/issues
+author:         Michael McKibben
+maintainer:     mikemckibben@gmail.com
+copyright:      2018 Michael McKibben
+license:        Apache-2.0
 license-file:   LICENSE
 build-type:     Simple
 cabal-version:  >= 1.10
 
 extra-source-files:
-    ChangeLog.md
+    CHANGES.md
     README.md
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/ansible-ssh
+  location: https://github.com/mikemckibben/ansible-ssh
 
 executable ansible-ssh
   main-is: Main.hs
