@@ -1,5 +1,5 @@
 name:           ansible-ssh
-version:        0.1.0
+version:        0.1.1
 description:    Please see the README on Github at <https://github.com/githubuser/ansible-ssh#readme>
 homepage:       https://github.com/githubuser/ansible-ssh#readme
 bug-reports:    https://github.com/githubuser/ansible-ssh/issues

@@ -1,4 +1,4 @@
-language: haskell
+language: generic
 sudo: true
 cache:
   directories:
@@ -25,15 +25,18 @@ before_install:
 script:
   - travis_wait stack --no-terminal setup
   - stack --no-terminal build
-  - cp $LOCAL_INSTALL_BIN/ansible-ssh $LOCAL_INSTALL_BIN/ansible-ssh-${TRAVIS_OS_NAME}-${ARCH}-${TRAVIS_TAG}
+  - cp $LOCAL_INSTALL_BIN/ansible-ssh $TRAVIS_BUILD_DIR/ansible-ssh-${TRAVIS_OS_NAME}-${ARCH}-${TRAVIS_TAG}
 
 deploy:
   provider: releases
   api_key:
     secure: "A9V4n5CWG6MOFDXqSpKxUGh+3yRL6f2kOWA8YSXtXaxHd1YonsCA1Cl/ZmDYgJG9jyUUyarMsB3W7kwn+kD5b46ytee+LYmzCy4f6O2xbkiguQJ8waPoElBWDzA+cOr1c2YFWdlrDhmJtpcW3ZJ3++JzAFF0BxmTngGMEeedN4KE5POoTTpReLuUirwohdaGGLYYyX1ETFqjC0bu4xXzm8qRle6FEwHqk3DtyRVWWhWJ3TamXZgNCiJ8g5aZzRN+A4W3btEtlHJqU3EwAAr3lUNyBwRbtequmyBP7JRZaYO6tcFq7lRK9Qs5PqL6WmQiqYiKbRVGjGhXZ35nfgRFokm4d+uvgbFkh/Krvf5Zu7wtNsxc1fT0EAynaJ680+aZwwgzKjr/BZo/ZCyA3yJp2cbiWxfhx89rLETpD5HCUkc8Y3HksGluopGQZOssxNOgtQ5xlj2nAMP1zPa8Y4VBAFNkwnQVmGElQf6zs4rpARPodk8IduqcTNavsP9D34l7PccbfTAPDbf9XpQac2GFA7XfvPHzU5eCipc/NECcjIo5LzJz3HZDINQFJ5GqSPM+RRvpE4K1n4ArY60YPbmg4XHq+DAsZ9OOc1SuBM4S3pZTbBmag6NSw2a/HhJEnPi4ITIaFHEyO18uY2Z0jKVH+79uUP7sQI/omP8yPegsyAA="
   skip_cleanup: true
+  overwrite: true
+  file_glob: true
   files:
-    - $LOCAL_INSTALL_BIN/ansible-ssh-${TRAVIS_OS_NAME}-${ARCH}-${TRAVIS_TAG} 
+    - ansible-ssh-*
+  name: "$TRAVIS_TAG Release"
   on:
     branch: master
     tags: true
