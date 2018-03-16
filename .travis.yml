@@ -40,8 +40,8 @@ after_success:
       gzip --best $(stack path --local-install-root)/bin/ansible-ssh
       github-release upload \
         --token "$GITHUB_TOKEN" \
-        --owner "${TRAVIS_REPO_SLUG%%/*}" \
-        --repo "${TRAVIS_REPO_SLUG#*/}" \
+        --owner "mikemckibben" \
+        --repo "ansible-ssh" \
         --tag "$TRAVIS_TAG" \
         --file "$(stack path --local-install-root)/bin/ansible-ssh.gz" \
         --name "ansible-ssh-$TRAVIS_TAG-$TRAVIS_OS_NAME-$(uname -m).gz"

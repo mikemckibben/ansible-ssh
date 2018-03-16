@@ -1,4 +1,4 @@
-# ansible-ssh
+# ansible-ssh [![Build Status](https://travis-ci.org/mikemckibben/ansible-ssh.svg?branch=master)](https://travis-ci.org/mikemckibben/ansible-ssh)
 
 ## Overview
 
@@ -29,8 +29,8 @@ This Haskell program uses the stack build tool, see
 https://docs.haskellstack.org/en/stable/README/ for installation instructions
 for your platform.
 
-The following will install this program in the local bin directory for your
-platform, see `stack path --local-bin` for the default location.
+The following command will install this program in the local bin directory for
+your platform, see `stack path --local-bin` for the default location.
 ```
 $ stack install
 ```
