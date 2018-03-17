@@ -7,6 +7,7 @@ cache:
     - "$HOME/.stack"
     - "$HOME/.local/bin"
     - "$TRAVIS_BUILD_DIR/.stack-work"
+
 os:
   - linux
   - osx
@@ -14,7 +15,7 @@ os:
 env:
   global:
     # GITHUB_TOKEN
-    secure: "bLTsp7Ho24iTKCDmgK8mtKqUwN5DaK/Sd790+lsfh8lBnOqL3HzSql5nI6/AnmKQVEU9qjCVNl1NQclUCfCgNHN9MCWuSPeE/mmXr7jPp8ryCcXQxTeyFeYAsCbTP7TmiKIpkl212273IHuBVSPaPIp8a9aWGeNaz/I+DKN9PASqjq27Fl1e4gg2k6fPoReXf30iwr2PNygCEA2Oat3j6r4DqG8qJ+cHPKLFCfKzMzpW4TEvvWCIOMxsSkpN9jqM85V/TDzpgZ92TT1TGRjTU60eYNTjKU/4SmwvUQ0ewY17csiBIV+Md1pZtIKO1vHiMXshXeWPy6t6Gh33mGZO+Skc13fcYyCqUFXygRTwsaePDwTeDq8Ovu2lAjoqWvE8t/IqX7hk0znetP+b477fITcKXGdTuYV+jFV2bPMMVQ8fDS0/7ypG3agQIee0hM5dC5HwBEjdMVrwRflNwFd2dcC+TmCvy2EqJ5lXfLiIxUZ25eEYSXKQIVzEh4HSvvSyIvAKwEtx3m8XuVSUGUqf3LDIk9Pp9BajCoJKIv121Wef7YNMTDU1AP9mUwvNxWvFBYhudKH3j22Mv3U8+d5qxdMcSbgVhXlm7ZB/99KLfaSEKVGd69F4aZ9Fpc578eUvFRCD3603hNyzLg2Kmqf83KJky8HbCDIdc7dG3FLa0zE="
+    secure: "sWmG2kixHTGta9sxPOmvErI7byDoSPjJKberqx2CVcPkBfepn6RPis5leVQiz8Bg0mnwqwMkPkXHGz2IkZ4g/lUKa+elvwqHqPeGybZJJ5OiaZK24MEGXn+ozixCTWrrG7lG/uSYc/OtX5z7spZ1HQkfsSsWSYjfRTUf+wuTDYQw59ztQFlX8s8CnYClnmo7JycVEMwtnHp+lol6XJwwmfj5ZO8ppQD50Sz8OLJwInb5+24re2u64GTKqVN8Zp/JLd854G3g3RiLInqQFd0k8MmeUrYIEhYk2enLhyWe31ZzfGYCgPkFgJ+/XmrJfsdRUgFp9uNhfezJl9kNZ1mUdjsUYWBEULVrFMNcSJL4OZdymOhkZ/HlAt2IjW+mxuVcHrdVijqwfMmc1/4VZ5uNOWCFJSWe7efiZUDAzjLqxHxSIBpxWElVt2cnnFf4wBTfT7dwT/FAwDWNiO3qClbhtv93Wn2OhGmhSuzZ38wc30orp/5C36qt5/f74lhLG+zk++I4zFRqHqOOy0ntwShm5YtDoc9iM4RU2Kx1SfKl65eOaFx3C8DK+mdoa/wIlgIKEvAtDBsa2wkmDOmORwE2KGY7PJfDV3uHOiECGDK/q/6JUnBOTghhRR3pI4YlZKZcCKvf2KxRsll3f/suFlT7SkLwVIGN9MFWaxEpBrZVOS8="
 
 before_install:
   - set -e
@@ -28,6 +29,7 @@ before_install:
   - travis_wait stack --no-terminal setup
 
 install:
+  - set -e
   - stack --no-terminal install github-release
   - stack --no-terminal build --only-dependencies
 
@@ -36,12 +38,15 @@ script:
 
 after_success:
   - |
-    if [ -n "$TRAVIS_TAG" ]; then
+    set -e
+    owner="${TRAVIS_REPO_SLUG%%/*}"
+    repo="${TRAVIS_REPO_SLUG#*/}"
+    if [ -n "$TRAVIS_TAG" -a "$owner" == "mikemckibben" -a $repo == "ansible-ssh" ]; then
       gzip --best $(stack path --local-install-root)/bin/ansible-ssh
       github-release upload \
         --token "$GITHUB_TOKEN" \
-        --owner "mikemckibben" \
-        --repo "ansible-ssh" \
+        --owner "$owner" \
+        --repo "$repo" \
         --tag "$TRAVIS_TAG" \
         --file "$(stack path --local-install-root)/bin/ansible-ssh.gz" \
         --name "ansible-ssh-$TRAVIS_TAG-$TRAVIS_OS_NAME-$(uname -m).gz"
