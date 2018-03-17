@@ -41,7 +41,7 @@ after_success:
     set -e
     owner="${TRAVIS_REPO_SLUG%%/*}"
     repo="${TRAVIS_REPO_SLUG#*/}"
-    if [ -n "$TRAVIS_TAG" -a "$owner" == "mikemckibben" -a $repo == "ansible-ssh" ]; then
+    if [ -n "$TRAVIS_TAG" -a "$owner" == "mikemckibben" -a "$repo" == "ansible-ssh" ]; then
       gzip --best $(stack path --local-install-root)/bin/ansible-ssh
       github-release upload \
         --token "$GITHUB_TOKEN" \
